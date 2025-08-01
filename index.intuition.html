@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inyution Flier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+        --primary: #6e45e2;
+        --dark: #1a1a2e;
+        --light: #f8f9fa;
+        --text-font: 'Space Grotesk', sans-serif;
+        --text-size: 24px;
+        --name-size: 16px;
+        --text-color: white;       
+
+        --text-margin-left: 40px;
+        --text-margin-right: 180px;
+        --text-max-width-percent: 80;
+        --glass-bg: rgba(0, 0, 0, 0.05);
+        --glass-border: rgba(0, 0, 0, 0.1);
+        --name-bottom-margin: 30px;
+        --text-weight: 600;
+        --name-weight: 400;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: var(--text-font);
+        background-color: #ffffff;
+        background-image:
+            linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        color: var(--dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 40px 20px;
+    }
+
+    /* Toggle-style header */
+    .toggle-header {
+    display: flex;
+    border: 2px solid #000;
+    border-radius: 40px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-tab {
+    padding: 10px 20px;
+    font-weight: 600;
+    font-family: var(--text-font);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    flex: 1;
+    justify-content: center;
+     text-decoration: none;
+}
+
+.toggle-tab.active {
+    background: #fff;
+    color: #000;
+    pointer-events: none;
+}
+
+.toggle-tab.inactive {
+    background: #000;
+    color: rgba(255, 255, 255, 0.3);
+    filter: blur(0.5px);
+}
+
+
+    .container {
+        width: 100%;
+        max-width: 600px; /* reduced from 800px */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+        color: var(--dark);
+    }
+
+    #displayCanvas {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+        border: 2px solid var(--glass-border);
+        margin-bottom: 25px;
+    }
+
+    .input-group {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: var(--dark);
+    }
+
+    textarea,
+    input[type="text"] {
+        width: 100%;
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        background: #f1f1f1;
+        color: var(--dark);
+        font-family: var(--text-font);
+        font-size: 16px;
+        outline: none;
+        transition: border 0.3s ease, background 0.3s ease;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus {
+        border-color: var(--primary);
+        background: #ffffff;
+    }
+
+    textarea {
+        height: 120px;
+        resize: none;
+        margin-bottom: 0;
+    }
+
+    input[type="text"] {
+        height: 50px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #000000;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #000000;
+        font-family: var(--text-font);
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    button:hover {
+        background: #000000;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    #hiddenCanvas {
+        display: none;
+    }
+
+    .template-selector {
+        width: 100%;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .template-scroll {
+        display: flex;
+        gap: 15px;
+        padding: 5px;
+    }
+
+    .template-option {
+        min-width: 120px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .template-option img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .template-option.active {
+        border-color: var(--primary);
+        transform: scale(1.05);
+    }
+
+    .template-option::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(110, 69, 226, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .template-option.active::after,
+    .template-option:hover::after {
+        opacity: 1;
+    }
+
+    .template-selector::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .template-selector::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .template-selector::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        :root {
+            --text-size: 18px;
+            --name-size: 12px;
+            --text-margin-left: 40px;
+            --text-margin-right: 140px;
+            --name-bottom-margin: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        :root {
+            --text-size: 14px;
+            --name-size: 10px;
+            --text-margin-left: 30px;
+            --text-margin-right: 100px;
+            --name-bottom-margin: 15px;
+        }
+
+        .template-option {
+            min-width: 100px;
+            height: 70px;
+        }
+    }
+</style>
+
+</head>
+<body>
+<!-- Tab Toggle -->
+
+<div class="toggle-header">
+    <a href="https://pixie-id-generator.netlify.app/" class="toggle-tab inactive">
+        Intuit ID <i class="fas fa-id-card"></i>
+    </a>
+    <a href="https://intuitionflyer.ct.ws/" class="toggle-tab active">
+        Intuition Flier <i class="fas fa-file-alt"></i>
+    </a>
+</div>
+
+
+    <div class="container">
+        <!-- Template Selector -->
+        <div class="template-selector">
+            <div class="template-scroll">
+                <div class="template-option active" data-image="flyer1.jpg">
+                    <img src="flyer1.jpg" alt="Mountain Landscape">
+                </div>
+                <div class="template-option" data-image="flyer2.jpg">
+                    <img src="flyer2.jpg" alt="Forest Path">
+                </div>
+                <div class="template-option" data-image="flyer3.jpg">
+                    <img src="flyer3.jpg" alt="Ocean Sunset">
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="displayCanvas"></canvas>
+        
+        <div class="input-group">
+            <label for="userText">Your Message</label>
+            <textarea id="userText" placeholder="Type your text here... Press Enter for new lines"></textarea>
+        </div>
+        
+        <div class="input-group">
+            <label for="userName">Your Name</label>
+            <input type="text" id="userName" placeholder="Enter your name">
+        </div>
+        
+        <button onclick="downloadImage()">Download Image with Text</button>
+    </div>
+
+    <canvas id="hiddenCanvas"></canvas>
+
+<script>
+    const displayCanvas = document.getElementById('displayCanvas');
+    const ctxDisplay = displayCanvas.getContext('2d');
+    const hiddenCanvas = document.getElementById('hiddenCanvas');
+    const ctxHidden = hiddenCanvas.getContext('2d');
+
+    // Default image
+    const bgImage = new Image();
+    bgImage.crossOrigin = "anonymous";
+    bgImage.src = "flyer1.jpg";
+
+    // Fallback if image fails
+    bgImage.onerror = function () {
+        bgImage.src = "https://via.placeholder.com/800x600.png?text=Your+Image";
+    };
+
+    // Initialize and update display when everything is ready
+    function initializeApplication() {
+        if (bgImage.complete) {
+            initCanvas();
+            updateDisplay();
+        } else {
+            bgImage.onload = function () {
+                initCanvas();
+                updateDisplay();
+            };
+        }
+        // Always update display with current input values
+        updateDisplay();
+    }
+
+    // Handle both DOMContentLoaded and load events
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApplication);
+    } else {
+        initializeApplication();
+    }
+
+    // Template selection
+    const templateOptions = document.querySelectorAll('.template-option');
+    templateOptions.forEach(option => {
+        option.addEventListener('click', function () {
+            templateOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+
+            const newImageSrc = this.getAttribute('data-image');
+            bgImage.src = newImageSrc;
+
+            if (newImageSrc === "flyer2.jpg") {
+                document.documentElement.style.setProperty('--text-color', 'black');
+            } else {
+                document.documentElement.style.setProperty('--text-color', 'white');
+            }
+
+            bgImage.onload = function () {
+                initCanvas();
+                updateDisplay();
+            };
+        });
+    });
+
+    // Auto-capitalize name
+    document.getElementById('userName').addEventListener('input', function () {
+        this.value = capitalizeName(this.value);
+        updateDisplay();
+    });
+
+    function capitalizeName(name) {
+        return name.split(' ').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+    }
+
+    function initCanvas() {
+        const containerWidth = document.querySelector('.container').offsetWidth;
+        const aspectRatio = bgImage.height / bgImage.width;
+
+        displayCanvas.width = containerWidth;
+        displayCanvas.height = containerWidth * aspectRatio;
+
+        hiddenCanvas.width = bgImage.width;
+        hiddenCanvas.height = bgImage.height;
+    }
+
+    document.getElementById('userText').addEventListener('input', updateDisplay);
+    window.addEventListener('resize', function () {
+        initCanvas();
+        updateDisplay();
+    });
+
+    function wrapText(ctx, text, x, maxWidth, lineHeight, fontSize, align = "left") {
+        const paragraphs = text.split('\n');
+        let allLines = [];
+
+        paragraphs.forEach(paragraph => {
+            const words = paragraph.split(' ');
+            let currentLine = '';
+
+            for (let i = 0; i < words.length; i++) {
+                const word = words[i];
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const testWidth = ctx.measureText(testLine).width;
+
+                if (testWidth > maxWidth) {
+                    if (currentLine) {
+                        allLines.push({ text: currentLine, size: fontSize, align: align });
+                        currentLine = word;
+                    } else {
+                        let part = '';
+                        for (let c = 0; c < word.length; c++) {
+                            const testPart = part + word[c];
+                            if (ctx.measureText(testPart).width > maxWidth) {
+                                allLines.push({ text: part, size: fontSize, align: align });
+                                part = word[c];
+                            } else {
+                                part = testPart;
+                            }
+                        }
+                        currentLine = part;
+                    }
+                } else {
+                    currentLine = testLine;
+                }
+            }
+
+            if (currentLine) {
+                allLines.push({ text: currentLine, size: fontSize, align: align });
+            }
+        });
+
+        return allLines;
+    }
+
+    function updateDisplay() {
+        if (!bgImage.complete) return;
+
+        ctxDisplay.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+        ctxDisplay.drawImage(bgImage, 0, 0, displayCanvas.width, displayCanvas.height);
+
+        const name = document.getElementById('userName').value;
+        const text = document.getElementById('userText').value;
+
+        const marginLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-left'));
+        const marginRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-right'));
+        const maxWidthPercent = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-max-width-percent'));
+        const maxWidth = (maxWidthPercent / 100) * displayCanvas.width - marginRight;
+        const nameBottomMargin = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-bottom-margin'));
+
+        const mainFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-size'));
+        const mainLineHeight = mainFontSize * 1.2;
+        const mainFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-weight'));
+        ctxDisplay.font = `${mainFontWeight} ${mainFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+        ctxDisplay.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+
+        const nameFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size'));
+        const nameLineHeight = nameFontSize * 1.2;
+        const nameFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-weight'));
+
+        const mainTextLines = wrapText(ctxDisplay, text, marginLeft, maxWidth, mainLineHeight, mainFontSize, "left");
+        const nameTextLines = name ? wrapText(ctxDisplay, name, marginLeft, maxWidth, nameLineHeight, nameFontSize, "center") : [];
+
+        const totalMainHeight = mainTextLines.length * mainLineHeight;
+        const totalNameHeight = nameTextLines.length * nameLineHeight;
+        const startY = (displayCanvas.height - totalMainHeight - nameBottomMargin - totalNameHeight) / 2;
+
+        let currentY = startY;
+        mainTextLines.forEach(line => {
+            ctxDisplay.font = `${mainFontWeight} ${line.size}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxDisplay.textAlign = line.align;
+            ctxDisplay.fillText(line.text, line.align === "center" ? displayCanvas.width / 2 : marginLeft, currentY + mainLineHeight / 2);
+            currentY += mainLineHeight;
+        });
+
+        if (nameTextLines.length) {
+            currentY = displayCanvas.height - nameBottomMargin - totalNameHeight + nameLineHeight / 2;
+
+            ctxDisplay.font = `${nameFontWeight} ${nameFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxDisplay.textAlign = "center";
+
+            nameTextLines.forEach(line => {
+                const textWidth = ctxDisplay.measureText(line.text).width;
+                const textX = displayCanvas.width / 2;
+                const textY = currentY;
+
+                ctxDisplay.fillText(line.text, textX, textY);
+
+                ctxDisplay.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+                ctxDisplay.lineWidth = 1;
+                ctxDisplay.beginPath();
+                ctxDisplay.moveTo(textX - textWidth / 2, textY + 5);
+                ctxDisplay.lineTo(textX + textWidth / 2, textY + 5);
+                ctxDisplay.stroke();
+
+                currentY += nameLineHeight;
+            });
+        }
+    }
+
+    function downloadImage() {
+        if (!bgImage.complete) return;
+
+        const displayAspectRatio = displayCanvas.height / displayCanvas.width;
+
+        hiddenCanvas.width = bgImage.width;
+        hiddenCanvas.height = bgImage.height;
+        ctxHidden.drawImage(bgImage, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+        const name = document.getElementById('userName').value;
+        const text = document.getElementById('userText').value;
+
+        const scaleFactor = hiddenCanvas.width / displayCanvas.width;
+
+        const marginLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-left')) * scaleFactor;
+        const marginRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-right')) * scaleFactor;
+        const maxWidthPercent = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-max-width-percent'));
+        const maxWidth = (maxWidthPercent / 100) * hiddenCanvas.width - marginRight;
+        const nameBottomMargin = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-bottom-margin')) * scaleFactor;
+
+        const mainFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-size')) * scaleFactor;
+        const mainLineHeight = mainFontSize * 1.2;
+        const mainFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-weight'));
+        ctxHidden.font = `${mainFontWeight} ${mainFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+        ctxHidden.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+
+        const nameFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size')) * scaleFactor;
+        const nameLineHeight = nameFontSize * 1.2;
+        const nameFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-weight'));
+
+        const mainTextLines = wrapText(ctxHidden, text, marginLeft, maxWidth, mainLineHeight, mainFontSize, "left");
+        const nameTextLines = name ? wrapText(ctxHidden, name, marginLeft, maxWidth, nameLineHeight, nameFontSize, "center") : [];
+
+        const totalMainHeight = mainTextLines.length * mainLineHeight;
+        const totalNameHeight = nameTextLines.length * nameLineHeight;
+        const startY = (hiddenCanvas.height - totalMainHeight - nameBottomMargin - totalNameHeight) / 2;
+
+        let currentY = startY;
+        mainTextLines.forEach(line => {
+            ctxHidden.font = `${mainFontWeight} ${line.size}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxHidden.textAlign = line.align;
+            ctxHidden.fillText(line.text, line.align === "center" ? hiddenCanvas.width / 2 : marginLeft, currentY + mainLineHeight / 2);
+            currentY += mainLineHeight;
+        });
+
+        if (nameTextLines.length) {
+            currentY = hiddenCanvas.height - nameBottomMargin - totalNameHeight + nameLineHeight / 2;
+
+            ctxHidden.font = `${nameFontWeight} ${nameFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxHidden.textAlign = "center";
+
+            nameTextLines.forEach(line => {
+                const textWidth = ctxHidden.measureText(line.text).width;
+                const textX = hiddenCanvas.width / 2;
+                const textY = currentY;
+
+                ctxHidden.fillText(line.text, textX, textY);
+
+                ctxHidden.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+                ctxHidden.lineWidth = 1 * scaleFactor;
+                ctxHidden.beginPath();
+                ctxHidden.moveTo(textX - textWidth / 2, textY + 5 * scaleFactor);
+                ctxHidden.lineTo(textX + textWidth / 2, textY + 5 * scaleFactor);
+                ctxHidden.stroke();
+
+                currentY += nameLineHeight;
+            });
+        }
+
+        const link = document.createElement('a');
+        link.download = 'image-with-text.png';
+        link.href = hiddenCanvas.toDataURL('image/png');
+        link.click();
+    }
+
+    // Toggle tab interaction
+document.querySelectorAll('.toggle-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.toggle-tab').forEach(t => t.classList.add('inactive'));
+        tab.classList.add('active');
+        tab.classList.remove('inactive');
+    });
+});
+
+</script>
+
+
+
+</body>
+</html>
