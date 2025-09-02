@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inyution Flier</title>
+    <title>Intuition Flyer Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
         --primary: #6e45e2;
+        --secondary: #ff6b6b;
+        --accent: #4ecdc4;
         --dark: #1a1a2e;
         --light: #f8f9fa;
         --text-font: 'Space Grotesk', sans-serif;
@@ -20,11 +22,13 @@
         --text-margin-left: 40px;
         --text-margin-right: 180px;
         --text-max-width-percent: 80;
-        --glass-bg: rgba(0, 0, 0, 0.05);
+        --glass-bg: rgba(255, 255, 255, 0.95);
         --glass-border: rgba(0, 0, 0, 0.1);
         --name-bottom-margin: 30px;
         --text-weight: 600;
         --name-weight: 400;
+        --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        --border-radius: 24px;
     }
 
     * {
@@ -35,11 +39,7 @@
 
     body {
         font-family: var(--text-font);
-        background-color: #ffffff;
-        background-image:
-            linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-        background-size: 40px 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: var(--dark);
         min-height: 100vh;
         display: flex;
@@ -51,68 +51,86 @@
 
     /* Toggle-style header */
     .toggle-header {
-    display: flex;
-    border: 2px solid #000;
-    border-radius: 40px;
-    overflow: hidden;
-    margin-bottom: 30px;
-    cursor: pointer;
-    user-select: none;
-}
+        display: flex;
+        border: 2px solid #000;
+        border-radius: 40px;
+        overflow: hidden;
+        margin-bottom: 30px;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: var(--shadow);
+    }
 
-.toggle-tab {
-    padding: 10px 20px;
-    font-weight: 600;
-    font-family: var(--text-font);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
-    flex: 1;
-    justify-content: center;
-     text-decoration: none;
-}
+    .toggle-tab {
+        padding: 12px 24px;
+        font-weight: 600;
+        font-family: var(--text-font);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        flex: 1;
+        justify-content: center;
+        text-decoration: none;
+    }
 
-.toggle-tab.active {
-    background: #fff;
-    color: #000;
-    pointer-events: none;
-}
+    .toggle-tab.active {
+        background: #fff;
+        color: #000;
+        pointer-events: none;
+    }
 
-.toggle-tab.inactive {
-    background: #000;
-    color: rgba(255, 255, 255, 0.3);
-    filter: blur(0.5px);
-}
-
+    .toggle-tab.inactive {
+        background: #000;
+        color: rgba(255, 255, 255, 0.3);
+        filter: blur(0.5px);
+    }
 
     .container {
         width: 100%;
-        max-width: 600px; /* reduced from 800px */
+        max-width: 700px;
         display: flex;
         flex-direction: column;
         align-items: center;
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius);
+        padding: 40px;
+        box-shadow: var(--shadow);
         margin: 0 auto;
         color: var(--dark);
+        backdrop-filter: blur(10px);
+    }
+
+    .app-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        text-align: center;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     #displayCanvas {
         width: 100%;
         height: auto;
-        border-radius: 15px;
-        border: 2px solid var(--glass-border);
-        margin-bottom: 25px;
+        border-radius: 20px;
+        border: 3px solid var(--glass-border);
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease;
+    }
+
+    #displayCanvas:hover {
+        transform: scale(1.02);
     }
 
     .input-group {
         width: 100%;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
     .input-group:last-child {
@@ -121,29 +139,74 @@
 
     .input-group label {
         display: block;
-        margin-bottom: 5px;
-        font-size: 14px;
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 600;
         color: var(--dark);
+    }
+
+    .color-selector {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .color-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .color-option.active {
+        border-color: var(--dark);
+        transform: scale(1.1);
+    }
+
+    .color-option:hover {
+        transform: scale(1.1);
+    }
+
+    .color-option::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .color-option.active::after {
+        opacity: 1;
     }
 
     textarea,
     input[type="text"] {
         width: 100%;
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        background: #f1f1f1;
+        padding: 18px;
+        border-radius: 16px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        background: #f8f9fa;
         color: var(--dark);
         font-family: var(--text-font);
         font-size: 16px;
         outline: none;
-        transition: border 0.3s ease, background 0.3s ease;
+        transition: all 0.3s ease;
     }
 
     textarea:focus,
     input[type="text"]:focus {
         border-color: var(--primary);
         background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(110, 69, 226, 0.1);
     }
 
     textarea {
@@ -153,28 +216,86 @@
     }
 
     input[type="text"] {
-        height: 50px;
+        height: 55px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #ddd;
+        outline: none;
+        -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        width: 100%;
+        margin-top: 25px;
     }
 
     button {
-        width: 100%;
-        padding: 15px;
-        border: 2px solid #000000;
-        border-radius: 12px;
-        background: #ffffff;
-        color: #000000;
+        flex: 1;
+        padding: 18px;
+        border: 2px solid transparent;
+        border-radius: 16px;
         font-family: var(--text-font);
         font-weight: 600;
         font-size: 16px;
         cursor: pointer;
         transition: all 0.3s ease;
-        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
-    button:hover {
-        background: #000000;
-        color: #ffffff;
-        transform: translateY(-2px);
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-color: transparent;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(110, 69, 226, 0.3);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--dark);
+        border-color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+        background: var(--dark);
+        color: white;
+        transform: translateY(-3px);
     }
 
     #hiddenCanvas {
@@ -183,27 +304,28 @@
 
     .template-selector {
         width: 100%;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         overflow-x: auto;
-        padding-bottom: 10px;
+        padding-bottom: 15px;
     }
 
     .template-scroll {
         display: flex;
-        gap: 15px;
-        padding: 5px;
+        gap: 20px;
+        padding: 10px;
     }
 
     .template-option {
-        min-width: 120px;
-        height: 80px;
-        border-radius: 10px;
+        min-width: 140px;
+        height: 90px;
+        border-radius: 16px;
         overflow: hidden;
-        border: 2px solid rgba(0, 0, 0, 0.2);
+        border: 3px solid rgba(0, 0, 0, 0.1);
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
         flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .template-option img {
@@ -215,6 +337,7 @@
     .template-option.active {
         border-color: var(--primary);
         transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(110, 69, 226, 0.3);
     }
 
     .template-option::after {
@@ -235,7 +358,7 @@
     }
 
     .template-selector::-webkit-scrollbar {
-        height: 5px;
+        height: 8px;
     }
 
     .template-selector::-webkit-scrollbar-track {
@@ -248,6 +371,8 @@
         border-radius: 10px;
     }
 
+
+
     @media (max-width: 768px) {
         :root {
             --text-size: 18px;
@@ -255,6 +380,19 @@
             --text-margin-left: 40px;
             --text-margin-right: 140px;
             --name-bottom-margin: 20px;
+        }
+
+        .container {
+            padding: 30px 20px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .template-option {
+            min-width: 120px;
+            height: 80px;
         }
     }
 
@@ -271,24 +409,28 @@
             min-width: 100px;
             height: 70px;
         }
+
+        .app-title {
+            font-size: 24px;
+        }
     }
 </style>
 
 </head>
 <body>
 <!-- Tab Toggle -->
-
 <div class="toggle-header">
     <a href="https://pixie-id-generator.netlify.app/" class="toggle-tab inactive">
         Intuit ID <i class="fas fa-id-card"></i>
     </a>
     <a href="https://intuitionflyer.ct.ws/" class="toggle-tab active">
-        Intuition Flier <i class="fas fa-file-alt"></i>
+        Intuition Flyer <i class="fas fa-file-alt"></i>
     </a>
 </div>
 
-
     <div class="container">
+        <h1 class="app-title">Intuition Flyer Generator</h1>
+        
         <!-- Template Selector -->
         <div class="template-selector">
             <div class="template-scroll">
@@ -301,14 +443,41 @@
                 <div class="template-option" data-image="flyer3.jpg">
                     <img src="flyer3.jpg" alt="Ocean Sunset">
                 </div>
+                <div class="template-option" data-image="flyer4.jpg">
+                    <img src="flyer4.jpg" alt="Abstract Art">
+                </div>
+                <div class="template-option" data-image="flyer5.jpg">
+                    <img src="flyer5.jpg" alt="Geometric Pattern">
+                </div>
+                <div class="template-option" data-image="flyer6.jpg">
+                    <img src="flyer6.jpg" alt="Minimal Design">
+                </div>
             </div>
         </div>
         
         <canvas id="displayCanvas"></canvas>
         
+        <!-- Text Color Selector -->
+        <div class="input-group">
+            <label>Text Color</label>
+            <div class="color-selector">
+                <div class="color-option active" data-color="white" style="background-color: white;"></div>
+                <div class="color-option" data-color="black" style="background-color: black;"></div>
+                <div class="color-option" data-color="#ff6b6b" style="background-color: #ff6b6b;"></div>
+                <div class="color-option" data-color="#4ecdc4" style="background-color: #4ecdc4;"></div>
+                <div class="color-option" data-color="#ffe66d" style="background-color: #ffe66d;"></div>
+            </div>
+        </div>
+        
+        <!-- Text Size Selector -->
+        <div class="input-group">
+            <label for="textSize">Text Size: <span id="textSizeValue">24</span>px</label>
+            <input type="range" id="textSize" min="16" max="48" value="24" oninput="updateTextSize(this.value)">
+        </div>
+        
         <div class="input-group">
             <label for="userText">Your Message</label>
-            <textarea id="userText" placeholder="Type your text here... Press Enter for new lines"></textarea>
+            <textarea id="userText" placeholder="Type your inspiring message here... Press Enter for new lines"></textarea>
         </div>
         
         <div class="input-group">
@@ -316,7 +485,16 @@
             <input type="text" id="userName" placeholder="Enter your name">
         </div>
         
-        <button onclick="downloadImage()">Download Image with Text</button>
+        <div class="button-group">
+            <button class="btn-primary" onclick="downloadImage()">
+                <i class="fas fa-download"></i> Download Image
+            </button>
+            <button class="btn-secondary" onclick="shareToX()">
+                <i class="fab fa-twitter"></i> Share to X
+            </button>
+        </div>
+
+
     </div>
 
     <canvas id="hiddenCanvas"></canvas>
@@ -369,10 +547,13 @@
             const newImageSrc = this.getAttribute('data-image');
             bgImage.src = newImageSrc;
 
+            // Auto-select appropriate text color based on template
             if (newImageSrc === "flyer2.jpg") {
-                document.documentElement.style.setProperty('--text-color', 'black');
+                selectColor('black');
+            } else if (newImageSrc.includes('unsplash.com')) {
+                selectColor('white');
             } else {
-                document.documentElement.style.setProperty('--text-color', 'white');
+                selectColor('white');
             }
 
             bgImage.onload = function () {
@@ -381,6 +562,28 @@
             };
         });
     });
+
+    // Color selection
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach(option => {
+        option.addEventListener('click', function () {
+            const color = this.getAttribute('data-color');
+            selectColor(color);
+        });
+    });
+
+    function selectColor(color) {
+        colorOptions.forEach(opt => opt.classList.remove('active'));
+        document.querySelector(`[data-color="${color}"]`).classList.add('active');
+        document.documentElement.style.setProperty('--text-color', color);
+        updateDisplay();
+    }
+
+    function updateTextSize(size) {
+        document.getElementById('textSizeValue').textContent = size;
+        document.documentElement.style.setProperty('--text-size', size + 'px');
+        updateDisplay();
+    }
 
     // Auto-capitalize name
     document.getElementById('userName').addEventListener('input', function () {
@@ -560,7 +763,12 @@
         mainTextLines.forEach(line => {
             ctxHidden.font = `${mainFontWeight} ${line.size}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
             ctxHidden.textAlign = line.align;
-            ctxHidden.fillText(line.text, line.align === "center" ? hiddenCanvas.width / 2 : marginLeft, currentY + mainLineHeight / 2);
+            
+            const textX = line.align === "center" ? hiddenCanvas.width / 2 : marginLeft;
+            const textY = currentY + mainLineHeight / 2;
+            
+            ctxHidden.fillText(line.text, textX, textY);
+            
             currentY += mainLineHeight;
         });
 
@@ -589,24 +797,111 @@
         }
 
         const link = document.createElement('a');
-        link.download = 'image-with-text.png';
+        link.download = 'intuition-flyer.png';
         link.href = hiddenCanvas.toDataURL('image/png');
         link.click();
     }
 
+    function shareToX() {
+        if (!bgImage.complete) return;
+
+        // First download the image, then share to X
+        const displayAspectRatio = displayCanvas.height / displayCanvas.width;
+
+        hiddenCanvas.width = bgImage.width;
+        hiddenCanvas.height = bgImage.height;
+        ctxHidden.drawImage(bgImage, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+        const name = document.getElementById('userName').value;
+        const text = document.getElementById('userText').value;
+
+        const scaleFactor = hiddenCanvas.width / displayCanvas.width;
+
+        const marginLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-left')) * scaleFactor;
+        const marginRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-margin-right')) * scaleFactor;
+        const maxWidthPercent = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-max-width-percent'));
+        const maxWidth = (maxWidthPercent / 100) * hiddenCanvas.width - marginRight;
+        const nameBottomMargin = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-bottom-margin')) * scaleFactor;
+
+        const mainFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-size')) * scaleFactor;
+        const mainLineHeight = mainFontSize * 1.2;
+        const mainFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--text-weight'));
+        ctxHidden.font = `${mainFontWeight} ${mainFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+        ctxHidden.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+
+        const nameFontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-size')) * scaleFactor;
+        const nameLineHeight = nameFontSize * 1.2;
+        const nameFontWeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-weight'));
+
+        const mainTextLines = wrapText(ctxHidden, text, marginLeft, maxWidth, mainLineHeight, mainFontSize, "left");
+        const nameTextLines = name ? wrapText(ctxHidden, name, marginLeft, maxWidth, nameLineHeight, nameFontSize, "center") : [];
+
+        const totalMainHeight = mainTextLines.length * mainLineHeight;
+        const totalNameHeight = nameTextLines.length * nameLineHeight;
+        const startY = (hiddenCanvas.height - totalMainHeight - nameBottomMargin - totalNameHeight) / 2;
+
+        let currentY = startY;
+        mainTextLines.forEach(line => {
+            ctxHidden.font = `${mainFontWeight} ${line.size}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxHidden.textAlign = line.align;
+            ctxHidden.fillText(line.text, line.align === "center" ? hiddenCanvas.width / 2 : marginLeft, currentY + mainLineHeight / 2);
+            currentY += mainLineHeight;
+        });
+
+        if (nameTextLines.length) {
+            currentY = hiddenCanvas.height - nameBottomMargin - totalNameHeight + nameLineHeight / 2;
+
+            ctxHidden.font = `${nameFontWeight} ${nameFontSize}px ${getComputedStyle(document.documentElement).getPropertyValue('--text-font').trim()}`;
+            ctxHidden.textAlign = "center";
+
+            nameTextLines.forEach(line => {
+                const textWidth = ctxHidden.measureText(line.text).width;
+                const textX = hiddenCanvas.width / 2;
+                const textY = currentY;
+
+                ctxHidden.fillText(line.text, textX, textY);
+
+                ctxHidden.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+                ctxHidden.lineWidth = 1 * scaleFactor;
+                ctxHidden.beginPath();
+                ctxHidden.moveTo(textX - textWidth / 2, textY + 5 * scaleFactor);
+                ctxHidden.lineTo(textX + textWidth / 2, textY + 5 * scaleFactor);
+                ctxHidden.stroke();
+
+                currentY += nameLineHeight;
+            });
+        }
+
+        // Convert canvas to blob and share to X
+        hiddenCanvas.toBlob(function(blob) {
+            const file = new File([blob], 'intuition-flyer.png', { type: 'image/png' });
+            
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                // Use Web Share API if available
+                navigator.share({
+                    title: 'Check out my Intuition Flyer!',
+                    text: 'Created with Intuition Flyer Generator',
+                    files: [file]
+                });
+            } else {
+                // Fallback: open X in new tab with pre-filled text
+                const shareText = `Check out my Intuition Flyer! ${text ? 'Message: ' + text : ''} Created with Intuition Flyer Generator`;
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+                window.open(shareUrl, '_blank');
+            }
+        }, 'image/png');
+    }
+
     // Toggle tab interaction
-document.querySelectorAll('.toggle-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.toggle-tab').forEach(t => t.classList.add('inactive'));
-        tab.classList.add('active');
-        tab.classList.remove('inactive');
+    document.querySelectorAll('.toggle-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.toggle-tab').forEach(t => t.classList.add('inactive'));
+            tab.classList.add('active');
+            tab.classList.remove('inactive');
+        });
     });
-});
-
 </script>
-
-
 
 </body>
 </html>
